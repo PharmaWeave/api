@@ -9,6 +9,7 @@
     "skipLibCheck": true,
     "baseUrl": "./src",
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "typeRoots": [
       "./src/envs.d.ts",
       "./node_modules/@types"

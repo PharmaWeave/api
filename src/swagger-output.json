@@ -1,0 +1,95 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "My API",
+    "description": "Description",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/signup": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Register a new Brand",
+        "parameters": [
+          {
+            "name": "brand",
+            "in": "body",
+            "description": "Brand data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cnpj": {
+                  "type": "string",
+                  "example": "58403919000106"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Login as Admin or Employee",
+        "parameters": [
+          {
+            "name": "login",
+            "in": "body",
+            "description": "Login data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "register": {
+                  "type": "string",
+                  "example": "cpf | cnpj"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  }
+}

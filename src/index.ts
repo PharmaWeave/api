@@ -1,5 +1,8 @@
 import express from 'express'
 
+import swaggerUi from "swagger-ui-express";
+import swaggerFile from "./swagger-output.json"
+
 import type { Request, Response } from 'express'
 
 import { connect } from './database/data-source'
@@ -9,7 +12,9 @@ import users from '@/user/routes'
 import auth from '@/auth/routes'
 
 const app = express()
-const port = 3000
+const port = 8080
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(express.json())
 

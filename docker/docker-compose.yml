@@ -15,10 +15,8 @@ services:
       target: base
       dockerfile: docker/Dockerfile
     command: npm run dev:docker
-    expose:
-      - 3000
     ports:
-      - 3000:3000
+      - 8080:8080
     volumes:
       - .././src:/home/node/app/src
     container_name: express
