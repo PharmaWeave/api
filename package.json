@@ -1,0 +1,41 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "pharmaweave",
+  "main": "index.ts",
+  "scripts": {
+    "setup": "chmod +x scripts/setup.sh && ./scripts/setup.sh",
+    "start:watch": "nodemon --watch 'build' --watch 'src/swagger.json' --exec 'node build/index.js'",
+    "tsc:watch": "nodemon --watch 'tsconfig.json' --exec 'tsc -w'",
+    "tsc-alias:watch": "nodemon --watch 'tsconfig.json' --exec 'tsc-alias -w'",
+    "dev:docker": "concurrently \"npm:tsc:watch\" \"npm:tsc-alias:watch\" \"npm:start:watch\"",
+    "dev": "docker compose -f docker/docker-compose.yml up",
+    "stop": "docker compose -f docker/docker-compose.yml down",
+    "stop:vls": "docker compose -f docker/docker-compose.yml down -v",
+    "migration:generate": "export $(cat ./.env | xargs) && tsx ./node_modules/typeorm/cli.js migration:generate -d ./src/database/data-source.ts"
+  },
+  "author": "mateusvrs",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cpf-cnpj-validator": "^1.0.3",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "path": "^0.12.7",
+    "pg": "^8.16.3",
+    "tsx": "^4.20.6",
+    "typeorm": "^0.3.27",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.5.2",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.9.2"
+  }
+}
