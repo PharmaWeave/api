@@ -5,13 +5,39 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "localhost:8080",
   "basePath": "/",
   "schemes": [
     "http"
   ],
   "paths": {
-    "/signup": {
+    "/user": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Register a new User",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/:user_id": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Update an User",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/signup": {
       "post": {
         "tags": [
           "Users"
@@ -39,14 +65,100 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/employee": {
+      "post": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Register a new Employee",
+        "parameters": [
+          {
+            "name": "employee",
+            "in": "body",
+            "description": "Employee data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cpf": {
+                  "type": "string",
+                  "example": "04476272010"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Mateus Vieira"
+                },
+                "salary": {
+                  "type": "number",
+                  "example": 8000
+                },
+                "branch_id": {
+                  "type": "number",
+                  "example": 1
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Retrieve Employees of your Brand if your are Admin and of your Branch if you are Manager",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/employee/activate": {
+      "patch": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Activate an Employee creating a password",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/employee/status/:employee_id": {
+      "patch": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Toggle the status of an Employee",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/employee/promote/:employee_id": {
+      "patch": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Promote an Employee to be a Brand manager",
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
@@ -81,12 +193,162 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/branch": {
+      "post": {
+        "tags": [
+          "Branches"
+        ],
+        "description": "Register a new Branch for some Brand",
+        "parameters": [
+          {
+            "name": "branch",
+            "in": "body",
+            "description": "Branch data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "brand_id": {
+                  "type": "string",
+                  "example": "number"
+                },
+                "address": {
+                  "type": "object",
+                  "properties": {
+                    "country": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "province": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "city": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "string"
+                    },
+                    "number": {
+                      "type": "string",
+                      "example": "number"
+                    }
+                  }
+                },
+                "phone": {
+                  "type": "string",
+                  "example": "string | undefined"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/branch/status/:branch_id": {
+      "patch": {
+        "tags": [
+          "Branches"
+        ],
+        "description": "Toggle the status of some Branch between ",
+        "parameters": [
+          {
+            "name": "branch_id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the Branch"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/product": {
+      "post": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Register a new Product into some Brand",
+        "parameters": [
+          {
+            "name": "product",
+            "in": "body",
+            "description": "Product data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "info": {
+                  "type": "object",
+                  "properties": {
+                    "price": {
+                      "type": "string",
+                      "example": "number"
+                    },
+                    "stock": {
+                      "type": "string",
+                      "example": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Retrieve all product infos of the Employee/Manager Branch",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/product/:product_id": {
+      "patch": {
+        "tags": [
+          "Product"
+        ],
+        "description": "Update any field of some Product that exists in your Branch",
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

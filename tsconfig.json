@@ -11,8 +11,12 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "typeRoots": [
-      "./src/envs.d.ts",
+      "src/@types",
       "./node_modules/@types"
+    ],
+    "types": [
+      "node",
+      "express"
     ],
     "paths": {
       "@/*": [
@@ -21,7 +25,8 @@
     }
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "src/@types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules"

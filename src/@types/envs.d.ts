@@ -3,6 +3,8 @@ namespace NodeJS {
         JWT_SECRET: string;
         JWT_REFRESH_SECRET: string;
 
+        JWT_PASSWORD_SECRET: string;
+
         POSTGRES_USER: string;
         POSTGRES_PASSWORD: string;
         POSTGRES_DB: string;

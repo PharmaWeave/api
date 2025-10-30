@@ -1,90 +1,102 @@
 import { Request, Response } from "express";
-import { z } from "zod";
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { AppDataSource } from "@/database/data-source";
-import { Brand, BrandColumns } from "@/user/models/brand";
-import { Employee, EmployeeColumns } from "@/user/models/employee";
 import { LoginValidator } from "@/auth/validators/login";
 import { ServerResponse } from "http";
+import { RoleEnum, RoleType } from "@/user/models/base-user";
+import { StatusEnum } from "@/database/base-entity";
+import { In } from "typeorm";
+import { BrandUser, EmployeeUser, User } from "@/user/models/user";
 
 class AuthController {
 
     static async validate(res: Response, data: any) {
         const { register, password } = LoginValidator.parse(data);
 
-        let account: BrandColumns | EmployeeColumns | null = null;
-        let role: "A" | "M" | null = null;
+        let account: BrandUser | EmployeeUser | null = null;
+        let role: Exclude<RoleType, "U"> | null = null;
 
-        const BrandRepository = AppDataSource.getRepository(Brand);
-        account = await BrandRepository.findOne({ where: { cnpj: register } });
+        const UserRepository = AppDataSource.getRepository(User);
+        account = await UserRepository.findOne({
+            where: {
+                register: register,
+                status: StatusEnum.ACTIVE,
+                role: RoleEnum.ADMIN
+            }
+        }) as BrandUser | null;
 
-        if (account) role = "A";
+        if (account) role = account.role;
         else {
-            const EmployeeRepository = AppDataSource.getRepository(Employee);
-            account = await EmployeeRepository.findOne({ where: { cpf: register } });
+            account = await UserRepository.findOne({
+                where: {
+                    register: register,
+                    status: StatusEnum.ACTIVE,
+                    role: In([RoleEnum.EMPLOYEE, RoleEnum.MANAGER])
+                },
+                relations: ["branch"]
+            }) as EmployeeUser | null;
 
-            if (account) role = "M";
+            if (account) role = account.role;
         }
 
         if (!account || !role) {
             return res.status(401).json({ error: "Credenciais inválidas" });
         }
 
-        const isValid = await bcrypt.compare(password, account.password);
+        const isValid = await bcrypt.compare(password, account.password as string);
         if (!isValid) {
             return res.status(401).json({ error: "Credenciais inválidas" });
         }
 
-        return { account, role }
+        return { account, role };
     }
 
     static async login(req: Request, res: Response) {
-        try {
-            let response = await this.validate(res, req.body);
-            if (response instanceof ServerResponse) return response;
+        let response = await this.validate(res, req.body);
+        if (response instanceof ServerResponse) return response;
 
-            const { account, role } = response as {
-                account: BrandColumns | EmployeeColumns,
-                role: "A" | "M"
+        const { account, role } = response as {
+            account: BrandUser | EmployeeUser,
+            role: Exclude<RoleType, "U">
+        };
+
+        const accessToken = jwt.sign(
+            {
+                id: account.id,
+                brand_id: role === RoleEnum.ADMIN ? account.id : (account as EmployeeUser).branch.brand_id,
+                branch_id: role === RoleEnum.ADMIN ? undefined : (account as EmployeeUser).branch_id,
+                role: role
+            },
+            process.env.JWT_SECRET as string,
+            { expiresIn: "15m" }
+        );
+
+        const refreshToken = jwt.sign(
+            {
+                id: account.id,
+                brand_id: role === RoleEnum.ADMIN ? account.id : (account as EmployeeUser).branch.brand_id,
+                branch_id: role === RoleEnum.ADMIN ? undefined : (account as EmployeeUser).branch_id,
+                role: role
+            },
+            process.env.JWT_REFRESH_SECRET as string,
+            { expiresIn: "30d" }
+        );
+
+        res.cookie("refresh_token", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 30
+        });
+
+        return res.json({
+            data: {
+                access_token: accessToken
             }
-
-            const accessToken = jwt.sign(
-                { id: account.id, role },
-                process.env.JWT_SECRET as string,
-                { expiresIn: "15m" }
-            );
-
-            const refreshToken = jwt.sign(
-                { id: account.id, role },
-                process.env.JWT_REFRESH_SECRET as string,
-                { expiresIn: "30d" }
-            );
-
-            res.cookie("refresh_token", refreshToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "lax",
-                maxAge: 1000 * 60 * 60 * 24 * 30,
-            });
-
-            return res.json({
-                data: {
-                    access_token: accessToken
-                }
-            });
-        } catch (err) {
-            if (err instanceof z.ZodError) {
-                return res.status(400).json({
-                    error: err.issues.map(i => i.message),
-                });
-            }
-
-            return res.status(500).json({
-                error: "Erro interno do servidor"
-            });
-        }
+        });
     }
 }
 

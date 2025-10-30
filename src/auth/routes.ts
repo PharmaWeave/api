@@ -17,7 +17,7 @@ router.post("/login", async (req, res) => {
           }
       }
     */
-    await AuthController.login(req, res)
+    await AuthController.login(req, res);
 });
 
 export default router;

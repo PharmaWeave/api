@@ -1,10 +1,23 @@
-import { CreateUserTable } from "@/migrations"
-import { BaseUser } from "@/user/models/base-user"
-import { Brand } from "@/user/models/brand"
-import { Employee } from "@/user/models/employee"
-import { User } from "@/user/models/user"
+import { Address } from "@/branch/models/address";
+import { Branch } from "@/branch/models/branch";
+import { User } from "@/user/models/user";
+import { Product } from "@/product/models/product";
+import { ProductInfo } from "@/product/models/product-info";
+import { Sale } from "@/sale/models/sale";
+import { SaleItem } from "@/sale/models/sale-item";
+import { Promotion } from "@/promotion/models/promotion";
+import { PromotionProduct } from "@/promotion/models/promo-product";
 
-import { DataSource } from "typeorm"
+import {
+    CreateProductAndInfoTables,
+    CreateUserAndBranchTables,
+    CreateSaleAndSaleItemTables,
+    CreatePromotionAndPromoProductTables,
+    SetPromotionPerSale,
+    PromotionPerSaleCanBeNull
+} from "@/migrations";
+
+import { DataSource } from "typeorm";
 
 export const AppDataSource = new DataSource({
     type: "postgres",
@@ -15,16 +28,33 @@ export const AppDataSource = new DataSource({
     database: process.env.POSTGRES_DB,
 
     migrationsRun: true,
-    entities: [BaseUser, Brand, Employee, User],
-    migrations: [CreateUserTable],
-})
+    entities: [
+        User,
+        Branch,
+        Address,
+        Product,
+        ProductInfo,
+        Sale,
+        SaleItem,
+        Promotion,
+        PromotionProduct
+    ],
+    migrations: [
+        CreateUserAndBranchTables,
+        CreateProductAndInfoTables,
+        CreateSaleAndSaleItemTables,
+        CreatePromotionAndPromoProductTables,
+        SetPromotionPerSale,
+        PromotionPerSaleCanBeNull
+    ]
+});
 
 
 export async function connect() {
     try {
-        await AppDataSource.initialize()
-        console.log("Database Connected!")
+        await AppDataSource.initialize();
+        console.log("Database Connected!");
     } catch (error) {
-        console.error("Starting Database Connection: ", error)
+        console.error("Starting Database Connection: ", error);
     }
 }
