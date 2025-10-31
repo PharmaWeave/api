@@ -44,7 +44,7 @@ const worker = new Worker<EmailJobData>(
     },
     {
         connection: {
-            host: "localhost",
+            host: process.env.REDIS_HOST,
             port: Number(process.env.REDIS_PORT) || 6379,
         },
         concurrency: 1,

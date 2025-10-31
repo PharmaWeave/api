@@ -46,6 +46,18 @@ services:
       - db
       - redis
 
+  email:
+    build:
+      context: ../
+      target: base
+      dockerfile: docker/Dockerfile.email
+    command: npx ts-node /home/node/app/src/email.ts
+    container_name: email-service
+    env_file:
+      - ../.env
+    depends_on:
+      - redis
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
