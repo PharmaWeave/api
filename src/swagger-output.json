@@ -258,6 +258,17 @@
             "description": ""
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Branches"
+        ],
+        "description": "Retrieve all branches of the brand",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/branch/status/:branch_id": {
@@ -278,6 +289,177 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/promotion": {
+      "post": {
+        "tags": [
+          "Promotion"
+        ],
+        "description": "Register a new Promotion and link it to products",
+        "parameters": [
+          {
+            "name": "promotion",
+            "in": "body",
+            "description": "Promotion data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "example": "Black Friday"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Special discount"
+                },
+                "type": {
+                  "type": "string",
+                  "example": "P"
+                },
+                "value": {
+                  "type": "number",
+                  "example": 20
+                },
+                "constraint": {
+                  "type": "number",
+                  "example": 100
+                },
+                "start": {
+                  "type": "string",
+                  "example": "2025-11-01T00:00:00Z"
+                },
+                "end": {
+                  "type": "string",
+                  "example": "2025-11-30T23:59:59Z"
+                },
+                "branch_id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "product_info_ids": {
+                  "type": "array",
+                  "example": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "items": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Promotion"
+        ],
+        "description": "Get all promotions for the user branch",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/promotion/:promotion_id": {
+      "delete": {
+        "tags": [
+          "Promotion"
+        ],
+        "description": "Delete a promotion by ID",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/promotion/:promotion_id/finalize": {
+      "patch": {
+        "tags": [
+          "Promotion"
+        ],
+        "description": "Finalize a promotion by setting its end date to now",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/sale": {
+      "post": {
+        "tags": [
+          "Sale"
+        ],
+        "description": "Register a new Sale for some User and updates Product stock",
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        }
+      }
+    },
+    "/sale/branch": {
+      "get": {
+        "tags": [
+          "Sale"
+        ],
+        "description": "Retrieve all sales from the branch with pagination",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/sale/:sale_id": {
+      "delete": {
+        "tags": [
+          "Sale"
+        ],
+        "description": "Delete some sale and rollback all purchase Products",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
+    "/sale/user/metrics": {
+      "get": {
+        "tags": [
+          "Sale"
+        ],
+        "description": "Retrieve metrics for all branch users",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/sale/user/:user_id": {
+      "get": {
+        "tags": [
+          "Sale"
+        ],
+        "description": "Retrieve all purchases made by some user",
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

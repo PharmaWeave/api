@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { RoleType } from "@/user/models/base-user";
+import { RoleType } from "@/modules/user/models/base-user";
 
 export const RoleMiddleware = (allowedRoles: Exclude<RoleType, "U">[]) => {
     return (req: Request, res: Response, next: NextFunction) => {

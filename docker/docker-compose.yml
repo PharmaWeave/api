@@ -9,12 +9,32 @@ services:
       - 5432:5432
     container_name: postgres
 
+  db_test:
+    image: postgres:16
+    container_name: postgres_test
+    env_file:
+      - ../.env.test
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data/
+
+  tests:
+    build:
+      context: ../
+      target: base
+      dockerfile: docker/Dockerfile
+    command: sh -c "npm run test:docker"
+    container_name: vitest
+    env_file:
+      - ../.env.test
+    depends_on:
+      - db_test
+
   api:
     build:
       context: ../
       target: base
       dockerfile: docker/Dockerfile
-    command: npm run dev:docker
+    command: npm run dev:watch
     ports:
       - 8080:8080
     volumes:
@@ -24,6 +44,7 @@ services:
       - ../.env
     depends_on:
       - db
+      - redis
 
   pgadmin:
     image: dpage/pgadmin4
@@ -37,6 +58,15 @@ services:
     depends_on:
       - db
 
+  redis:
+    image: redis:7
+    container_name: redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
 volumes:
   postgres_data:
+  postgres_test_data:
   pgadmin_data:
+  redis_data:

@@ -18,6 +18,10 @@ const routes = [
 
     "../src/branch/routes.ts",
 
+    "../src/promotion/routes.ts",
+
+    "../src/sale/routes.ts",
+
     "../src/product/routes.ts",
 
     "../src/index.ts"

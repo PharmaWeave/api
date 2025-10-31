@@ -6,10 +6,11 @@
   "scripts": {
     "swagger:gen": "ts-node src/swagger.ts",
     "setup": "chmod +x scripts/setup.sh && ./scripts/setup.sh",
-    "start:watch": "nodemon --watch 'build' --watch 'src/swagger.json' --exec 'node build/index.js'",
-    "tsc:watch": "nodemon --watch 'tsconfig.json' --exec 'tsc -w'",
-    "tsc-alias:watch": "nodemon --watch 'tsconfig.json' --exec 'tsc-alias -w'",
-    "dev:docker": "concurrently \"npm:swagger:gen\" \"npm:tsc:watch\" \"npm:tsc-alias:watch\" \"npm:start:watch\"",
+    "start:watch": "nodemon --watch 'dist' --watch 'src/swagger.json' --exec 'node dist/index.js'",
+    "build": "babel src --out-dir dist --extensions \".ts,.js\" --copy-files",
+    "build:watch": "nodemon --watch 'src' --exec 'npm run build'",
+    "dev:watch": "concurrently \"npm:swagger:gen\" \"npm:build:watch\" \"npm:start:watch\"",
+    "test:docker": "vitest run --run --passWithNoTests --config vitest.config.ts",
     "dev": "docker compose -f docker/docker-compose.yml up",
     "stop": "docker compose -f docker/docker-compose.yml down",
     "stop:vls": "docker compose -f docker/docker-compose.yml down -v",
@@ -18,7 +19,9 @@
   "author": "mateusvrs",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.920.0",
     "bcryptjs": "^3.0.2",
+    "bullmq": "^5.62.1",
     "cpf-cnpj-validator": "^1.0.3",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
@@ -32,18 +35,27 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
+    "@babel/cli": "^7.28.3",
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@stylistic/eslint-plugin": "^5.5.0",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.5.2",
+    "@types/supertest": "^6.0.3",
     "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
+    "@vitest/coverage-istanbul": "^4.0.5",
+    "babel-plugin-module-resolver": "^5.0.2",
     "concurrently": "^9.2.1",
     "eslint": "^9.38.0",
     "nodemon": "^3.1.10",
+    "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.16",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.5"
   }
 }

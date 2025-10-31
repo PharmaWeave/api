@@ -1,12 +1,13 @@
-import { Address } from "@/branch/models/address";
-import { Branch } from "@/branch/models/branch";
-import { User } from "@/user/models/user";
-import { Product } from "@/product/models/product";
-import { ProductInfo } from "@/product/models/product-info";
-import { Sale } from "@/sale/models/sale";
-import { SaleItem } from "@/sale/models/sale-item";
-import { Promotion } from "@/promotion/models/promotion";
-import { PromotionProduct } from "@/promotion/models/promo-product";
+import { Address } from "@/modules/branch/models/address";
+import { Branch } from "@/modules/branch/models/branch";
+import { User } from "@/modules/user/models/user";
+import { Product } from "@/modules/product/models/product";
+import { ProductInfo } from "@/modules/product/models/product-info";
+import { Sale } from "@/modules/sale/models/sale";
+import { SaleItem } from "@/modules/sale/models/sale-item";
+import { Promotion } from "@/modules/promotion/models/promotion";
+import { PromotionProduct } from "@/modules/promotion/models/promo-product";
+import { Template } from "@/modules/notification/models/template";
 
 import {
     CreateProductAndInfoTables,
@@ -14,18 +15,21 @@ import {
     CreateSaleAndSaleItemTables,
     CreatePromotionAndPromoProductTables,
     SetPromotionPerSale,
-    PromotionPerSaleCanBeNull
+    PromotionPerSaleCanBeNull,
+    CreateTemplateTable
 } from "@/migrations";
 
 import { DataSource } from "typeorm";
 
 export const AppDataSource = new DataSource({
     type: "postgres",
-    host: process.env.DATABASE_HOSTNAME,
-    port: Number(process.env.DATABASE_PORT),
-    username: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB,
+    host: process.env.NODE_ENV === "test"
+        ? process.env.DATABASE_HOSTNAME || "localhost"
+        : process.env.DATABASE_HOSTNAME || "db",
+    port: Number(process.env.DATABASE_PORT) || 5433,
+    username: process.env.POSTGRES_USER || "postgres",
+    password: process.env.POSTGRES_PASSWORD || "postgres",
+    database: process.env.POSTGRES_DB || "postgres",
 
     migrationsRun: true,
     entities: [
@@ -37,7 +41,8 @@ export const AppDataSource = new DataSource({
         Sale,
         SaleItem,
         Promotion,
-        PromotionProduct
+        PromotionProduct,
+        Template
     ],
     migrations: [
         CreateUserAndBranchTables,
@@ -45,7 +50,8 @@ export const AppDataSource = new DataSource({
         CreateSaleAndSaleItemTables,
         CreatePromotionAndPromoProductTables,
         SetPromotionPerSale,
-        PromotionPerSaleCanBeNull
+        PromotionPerSaleCanBeNull,
+        CreateTemplateTable
     ]
 });
 

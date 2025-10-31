@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-import { RoleType } from "@/user/models/base-user";
+import { RoleType } from "@/modules/user/models/base-user";
 
 import jwt from "jsonwebtoken";
 

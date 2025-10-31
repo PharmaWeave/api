@@ -10,9 +10,6 @@ done
 echo 'PostgreSQL has started'
 
 echo 'Transpiling TypeScript...'
-npx tsc
-
-echo 'Typescript alias paths...'
-npx tsc-alias
+npm run build
 
 exec "$@"
