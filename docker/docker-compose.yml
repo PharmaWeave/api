@@ -48,13 +48,13 @@ services:
 
   email:
     build:
-      context: ../
+      context: ../../email-service
       target: base
-      dockerfile: docker/Dockerfile.email
-    command: npx ts-node /home/node/app/src/email.ts
+      dockerfile: docker/Dockerfile
+    command: npx ts-node /home/node/app/src/index.ts
     container_name: email-service
     env_file:
-      - ../.env
+      - ../../email-service/.env
     depends_on:
       - redis
 

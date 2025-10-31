@@ -19,7 +19,6 @@
   "author": "mateusvrs",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.920.0",
     "bcryptjs": "^3.0.2",
     "bullmq": "^5.62.1",
     "cpf-cnpj-validator": "^1.0.3",

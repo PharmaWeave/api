@@ -11,7 +11,8 @@ export default [
             "build/**",
             "node_modules/**",
             "src/@types/**",
-            "src/migrations/**"
+            "src/migrations/**",
+            "babel.config.js"
         ]
     },
     {
@@ -40,7 +41,7 @@ export default [
                 "error",
                 "double",
                 {
-                    allowTemplateLiterals: true
+                    allowTemplateLiterals: "always"
                 }
             ],
 
