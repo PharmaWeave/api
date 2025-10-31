@@ -8,7 +8,7 @@
     "setup": "chmod +x scripts/setup.sh && ./scripts/setup.sh",
     "start:watch": "nodemon --watch 'dist' --watch 'src/swagger.json' --exec 'node dist/index.js'",
     "build": "babel src --out-dir dist --extensions \".ts,.js\" --copy-files",
-    "build:watch": "nodemon --watch 'src' --exec 'npm run build'",
+    "build:watch": "babel src --out-dir dist --extensions \".ts,.js\" --copy-files --watch",
     "dev:watch": "concurrently \"npm:swagger:gen\" \"npm:build:watch\" \"npm:start:watch\"",
     "test:docker": "vitest run --run --passWithNoTests --config vitest.config.ts",
     "dev": "docker compose -f docker/docker-compose.yml up",

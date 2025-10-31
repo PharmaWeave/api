@@ -10,19 +10,19 @@ const doc = {
 
 const output = "./swagger-output.json";
 const routes = [
-    "../src/user/routes/index.ts",
-    "../src/user/routes/employee.ts",
-    "../src/user/routes/routes.ts",
+    "../src/modules/user/routes/index.ts",
+    "../src/modules/user/routes/employee.ts",
+    "../src/modules/user/routes/routes.ts",
 
-    "../src/auth/routes.ts",
+    "../src/modules/auth/routes.ts",
 
-    "../src/branch/routes.ts",
+    "../src/modules/branch/routes.ts",
 
-    "../src/promotion/routes.ts",
+    "../src/modules/promotion/routes.ts",
 
-    "../src/sale/routes.ts",
+    "../src/modules/sale/routes.ts",
 
-    "../src/product/routes.ts",
+    "../src/modules/product/routes.ts",
 
     "../src/index.ts"
 ];
