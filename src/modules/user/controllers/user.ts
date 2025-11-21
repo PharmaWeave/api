@@ -29,6 +29,14 @@ class UserController {
         }
     }
 
+    static async get_all(req: Request, res: Response) {
+        const products = await UserService.retrieve(req.user as RequestUser);
+
+        res.status(200).json({
+            data: products
+        });
+    }
+
     static async update(req: Request, res: Response) {
         const parser = z.object({
             user_id: z.string().regex(/^\d+$/).transform(Number)

@@ -22,6 +22,17 @@
             "description": ""
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Retrieve all customer infos of the Employee/Manager Branch",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     },
     "/user/:user_id": {
@@ -190,6 +201,19 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Refresh access token",
         "responses": {
           "200": {
             "description": "OK"

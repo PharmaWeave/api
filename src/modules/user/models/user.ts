@@ -1,5 +1,6 @@
 import { BaseEntity, StatusType } from "@/database/base-entity";
 import { BranchColumns } from "@/modules/branch/models/branch";
+import { SaleColumns } from "@/modules/sale/models/sale";
 import { PublicUser, RoleType } from "@/modules/user/models/base-user";
 
 import { EntitySchema } from "typeorm";
@@ -15,6 +16,7 @@ export interface UserColumns {
     password?: string;
 
     branch?: BranchColumns;
+    sales?: SaleColumns;
 
     branch_id?: number;
 
@@ -82,6 +84,11 @@ export const User = new EntitySchema<UserColumns>({
             },
             nullable: true,
             onDelete: "CASCADE"
+        },
+        sales: {
+            type: "one-to-many",
+            target: "sale",
+            inverseSide: "user"
         }
     },
     indices: [

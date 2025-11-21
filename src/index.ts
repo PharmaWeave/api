@@ -1,5 +1,8 @@
 import express from "express";
 
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
 import swaggerUi from "swagger-ui-express";
 import swaggerFile from "./swagger-output.json";
 
@@ -18,6 +21,15 @@ import { ErrorMiddleware } from "./middlewares/error";
 
 const app = express();
 const port = 8080;
+
+app.use(cookieParser());
+app.use(cors({
+    origin: [
+        "http://localhost:8080",
+        "http://localhost:3000"
+    ],
+    credentials: true
+}));
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 

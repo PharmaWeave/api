@@ -22,6 +22,19 @@ router.post("/",
     }
 );
 
+router.get("/",
+    AuthMiddleware,
+    RoleMiddleware([RoleEnum.EMPLOYEE, RoleEnum.MANAGER]),
+    async (req, res) => {
+        /* 
+          #swagger.tags = ['Users']
+          #swagger.path = '/user'
+          #swagger.description = 'Retrieve all customer infos of the Employee/Manager Branch'
+        */
+        await UserController.get_all(req, res);
+    }
+);
+
 router.patch("/:user_id",
     AuthMiddleware,
     RoleMiddleware([RoleEnum.EMPLOYEE, RoleEnum.MANAGER]),

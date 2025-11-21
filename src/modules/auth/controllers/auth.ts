@@ -10,6 +10,7 @@ import { StatusEnum } from "@/database/base-entity";
 import { In } from "typeorm";
 import { BrandUser, EmployeeUser, User } from "@/modules/user/models/user";
 import AuthService from "../services/auth";
+import { RefreshValidator } from "../validators/refresh";
 
 class AuthController {
 
@@ -64,6 +65,25 @@ class AuthController {
         };
 
         const { access_token, refresh_token } = AuthService.generate_tokens(account, role);
+
+        res.cookie("refresh_token", refresh_token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 1000 * 60 * 60 * 24 * 30
+        });
+
+        return res.json({
+            data: {
+                access_token: access_token
+            }
+        });
+    }
+
+    static async refresh(req: Request, res: Response) {
+        const validated = RefreshValidator.parse(req.cookies);
+
+        const { access_token, refresh_token } = await AuthService.refresh_tokens(validated.refresh_token);
 
         res.cookie("refresh_token", refresh_token, {
             httpOnly: true,

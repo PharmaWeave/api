@@ -20,4 +20,12 @@ router.post("/login", async (req, res) => {
     await AuthController.login(req, res);
 });
 
+router.post("/refresh", async (req, res) => {
+    /* 
+      #swagger.tags = ['Auth']
+      #swagger.description = 'Refresh access token'
+    */
+    await AuthController.refresh(req, res);
+});
+
 export default router;

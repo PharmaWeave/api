@@ -5,7 +5,7 @@ import { RoleEnum } from "@/modules/user/models/base-user";
 import { StatusEnum } from "@/database/base-entity";
 import { RequestUser } from "@/middlewares/auth";
 import { NotFound } from "@/utils/errors/not-found";
-import { QueryFailedError } from "typeorm";
+import { In, QueryFailedError } from "typeorm";
 import { BadRequest } from "@/utils/errors/bad-request";
 
 class UserService {
@@ -24,6 +24,33 @@ class UserService {
         await UserRepository.save(created);
 
         return created;
+    }
+
+    static async retrieve(user: RequestUser) {
+        const UserRepository = AppDataSource.getRepository(User);
+
+        const result = await UserRepository.find({
+            where: {
+                branch_id: user.branch_id,
+                role: RoleEnum.USER,
+                status: In([StatusEnum.ACTIVE, StatusEnum.INACTIVE])
+            },
+            relations: ["sales"]
+        });
+
+        return result.map(user => {
+            return {
+                id: user.id,
+                name: user.name,
+                register: user.register,
+                email: user.email,
+                sales: user.sales,
+
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                status: user.status
+            };
+        });
     }
 
     static async update(user_id: number, data: any) {
