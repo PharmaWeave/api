@@ -2,6 +2,7 @@ import { BranchColumns } from "@/modules/branch/models/branch";
 import { BaseEntity, StatusType } from "@/database/base-entity";
 
 import { EntitySchema } from "typeorm";
+import { PromotionProductColumns } from "./promo-product";
 
 export const PromotionStyleEnum = {
     VALUE: "V",
@@ -23,6 +24,7 @@ export interface PromotionColumns {
     end: Date;
 
     branch: BranchColumns;
+    products: PromotionProductColumns;
 
     branch_id: number;
 
@@ -86,6 +88,11 @@ export const Promotion = new EntitySchema<PromotionColumns>({
             },
             nullable: false,
             onDelete: "CASCADE"
+        },
+        products: {
+            type: "one-to-many",
+            target: "promotion_product",
+            inverseSide: "promotion"
         }
     }
 });

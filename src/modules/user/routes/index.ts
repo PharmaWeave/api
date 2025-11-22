@@ -48,6 +48,19 @@ router.patch("/:user_id",
     }
 );
 
+router.patch("/status/:user_id",
+    AuthMiddleware,
+    RoleMiddleware([RoleEnum.ADMIN, RoleEnum.EMPLOYEE, RoleEnum.MANAGER]),
+    async (req, res) => {
+        /* 
+            #swagger.tags = ['Users']
+            #swagger.path = '/user/status/:user_id'
+            #swagger.description = 'Toggle user status including employees possibly'
+        */
+        await UserController.toggle_status(req, res);
+    }
+);
+
 router.post("/signup", async (req, res) => {
     /* 
       #swagger.tags = ['Users']

@@ -100,27 +100,34 @@ export class SaleService {
     }
 
     static async metrics(user: RequestUser) {
-        const SaleRepository = AppDataSource.getRepository(Sale);
+        const UserRepository = AppDataSource.getRepository(User);
 
-        const result = await SaleRepository.createQueryBuilder("sale")
-            .select("sale.user_id", "user_id")
+        const result = await UserRepository.createQueryBuilder("user")
+            .select("user.id", "user_id")
             .addSelect("user.name", "user_name")
             .addSelect("user.email", "user_email")
             .addSelect("user.register", "user_register")
+            .addSelect("user.role", "user_role")
             .addSelect("user.status", "user_status")
             .addSelect("SUM(sale.total_amount)", "total_spent")
             .addSelect("COUNT(sale.id)", "total_purchases")
             .addSelect("MAX(sale.created_at)", "last_purchase")
-            .innerJoin("user", "user", "user.id = sale.user_id")
+            .leftJoin("sale", "sale", "sale.user_id = user.id AND sale.status = :saleStatus", {
+                saleStatus: StatusEnum.ACTIVE
+            })
             .where("user.branch_id = :branch_id", { branch_id: user.branch_id })
-            .andWhere("sale.status = :saleStatus", { saleStatus: StatusEnum.ACTIVE })
             .andWhere("user.status IN (:...userStatus)", { userStatus: [StatusEnum.ACTIVE, StatusEnum.INACTIVE] })
-            .groupBy("sale.user_id")
+            .andWhere("user.role IN (:...userAllowedRoles)", {
+                userAllowedRoles: [RoleEnum.USER, RoleEnum.EMPLOYEE, RoleEnum.MANAGER]
+            })
+            .andWhere("user.id != :user_current_id", { user_current_id: user.id })
+            .groupBy("user.id")
             .addGroupBy("user.name")
             .addGroupBy("user.email")
             .addGroupBy("user.register")
             .addGroupBy("user.status")
-            .orderBy("total_spent", "DESC")
+            .orderBy("user_name", "ASC")
+            .orderBy("total_spent", "ASC")
             .getRawMany();
 
         return result.map((r) => ({
@@ -128,9 +135,10 @@ export class SaleService {
             user_name: r.user_name,
             user_email: r.user_email,
             user_register: r.user_register,
+            user_role: r.user_role,
             total_spent: Number(r.total_spent),
             total_purchases: Number(r.total_purchases),
-            last_purchase: new Date(r.last_purchase),
+            last_purchase: r.last_purchase,
             user_status: r.user_status
         }));
     }
@@ -138,7 +146,7 @@ export class SaleService {
     static async getAllByBranch(user: RequestUser, page: number, limit: number) {
         const SaleRepository = AppDataSource.getRepository(Sale);
 
-        const [sales, total] = await SaleRepository.createQueryBuilder("sale")
+        const sales = await SaleRepository.createQueryBuilder("sale")
             .select([
                 "sale.id",
                 "sale.createdAt",
@@ -151,17 +159,24 @@ export class SaleService {
             .addSelect(["user.id", "user.name", "user.register"])
             .innerJoin("sale.employee", "employee")
             .addSelect(["employee.id", "employee.name", "employee.register"])
-            .leftJoinAndSelect("sale.promotion", "promotion")
+            .leftJoin("sale.promotion", "promotion")
+            .addSelect(["promotion.id", "promotion.title"])
+            .leftJoin("sale.sale_items", "sale_item")
+            .addSelect("SUM(sale_item.quantity)", "sale_total_items")
             .where("user.branch_id = :branch_id", { branch_id: user.branch_id })
             .andWhere("sale.status = :saleStatus", { saleStatus: StatusEnum.ACTIVE })
             .andWhere("user.status IN (:...userStatus)", { userStatus: [StatusEnum.ACTIVE, StatusEnum.INACTIVE] })
+            .groupBy("sale.id")
+            .addGroupBy("user.id")
+            .addGroupBy("employee.id")
+            .addGroupBy("promotion.id")
             .orderBy("sale.createdAt", "DESC")
-            .skip((page - 1) * limit)
-            .take(limit)
-            .getManyAndCount();
+            .getRawMany();
+
+        const total = sales.length;
 
         return {
-            data: sales,
+            data: sales.slice((page - 1) * limit, limit * page),
             pagination: {
                 page,
                 limit,

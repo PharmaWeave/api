@@ -22,7 +22,7 @@ class AuthService {
                 role: role
             },
             process.env.JWT_SECRET as string,
-            { expiresIn: "15m" }
+            { expiresIn: "7d" }
         );
 
         const refresh_token = jwt.sign(
@@ -67,7 +67,7 @@ class AuthService {
             role: role
         };
 
-        const access = jwt.sign(new_payload, process.env.JWT_SECRET as string, { expiresIn: "15m" });
+        const access = jwt.sign(new_payload, process.env.JWT_SECRET as string, { expiresIn: "7d" });
         const refresh = jwt.sign(new_payload, process.env.JWT_REFRESH_SECRET as string, { expiresIn: "30d" });
 
         return { access_token: access, refresh_token: refresh };

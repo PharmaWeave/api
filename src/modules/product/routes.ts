@@ -60,4 +60,17 @@ router.patch("/:product_id",
     }
 );
 
+router.patch("/status/:product_info_id",
+    AuthMiddleware,
+    RoleMiddleware([RoleEnum.EMPLOYEE, RoleEnum.MANAGER]),
+    async (req, res) => {
+        /* 
+          #swagger.tags = ['Product']
+          #swagger.path = '/product/:product_id'
+          #swagger.description = 'Toggle the status of a Product Info of a Branch'
+        */
+        return await ProductController.toggle_status(req, res);
+    }
+);
+
 export default router;

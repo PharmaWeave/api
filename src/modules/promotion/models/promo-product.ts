@@ -1,6 +1,6 @@
 import { BaseEntity, StatusType } from "@/database/base-entity";
 
-import { BrandUser } from "@/modules/user/models/user";
+import { ProductInfoColumns } from "@/modules/product/models/product-info";
 import { PromotionColumns } from "@/modules/promotion/models/promotion";
 
 import { EntitySchema } from "typeorm";
@@ -8,7 +8,7 @@ import { EntitySchema } from "typeorm";
 export interface PromotionProductColumns {
     id: number;
 
-    product_info: BrandUser;
+    product_info: ProductInfoColumns;
     promotion: PromotionColumns;
 
     product_info_id: number;
@@ -46,7 +46,7 @@ export const PromotionProduct = new EntitySchema<PromotionProductColumns>({
             nullable: false,
             onDelete: "CASCADE"
         },
-        promotion_id: {
+        promotion: {
             type: "many-to-one",
             target: "promotion",
             joinColumn: {

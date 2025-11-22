@@ -47,7 +47,14 @@ class ProductService {
                 branch_id: user.branch_id,
                 status: In([StatusEnum.ACTIVE, StatusEnum.INACTIVE])
             },
-            relations: ["product"]
+            relations: ["product"],
+            order: {
+                status: "ASC",
+                stock: "ASC",
+                product: {
+                    name: "ASC"
+                }
+            }
         });
 
         return result.map(product => {
@@ -57,6 +64,7 @@ class ProductService {
                 description: product.product.description,
                 brand_id: product.product.brand_id,
                 info: {
+                    id: product.id,
                     price: product.price,
                     stock: product.stock,
                     branch_id: product.branch_id,

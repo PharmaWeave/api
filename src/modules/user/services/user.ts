@@ -34,8 +34,7 @@ class UserService {
                 branch_id: user.branch_id,
                 role: RoleEnum.USER,
                 status: In([StatusEnum.ACTIVE, StatusEnum.INACTIVE])
-            },
-            relations: ["sales"]
+            }
         });
 
         return result.map(user => {
@@ -44,7 +43,6 @@ class UserService {
                 name: user.name,
                 register: user.register,
                 email: user.email,
-                sales: user.sales,
 
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,

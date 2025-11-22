@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const InfoValidator = z.object({
     price: z.int().positive(),
-    stock: z.int().optional().default(0)
+    stock: z.int().positive().optional().default(0)
 });
 
 export const ProductValidator = z.object({

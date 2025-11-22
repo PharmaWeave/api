@@ -6,6 +6,7 @@ import { RequestUser } from "@/middlewares/auth";
 import { StatusEnum } from "@/database/base-entity";
 import { NotFound } from "@/utils/errors/not-found";
 import { z } from "zod";
+import { Sale } from "@/modules/sale/models/sale";
 
 export class BranchService {
 
@@ -96,10 +97,27 @@ export class BranchService {
             .andWhere("branch.status IN (:...statuses)", { statuses: [StatusEnum.ACTIVE, StatusEnum.INACTIVE] })
             .getRawAndEntities();
 
-        return branches.entities.map((branch, i) => ({
-            ...branch,
-            employee_count: Number(branches.raw[i]["employee_count"])
-        }));
+        return await Promise.all(
+            branches.entities.map(async (branch, i) => {
+                const month_revenue = await AppDataSource.getRepository(Sale)
+                    .createQueryBuilder("sale")
+                    .select("SUM(sale.total_amount)", "month_revenue")
+                    .innerJoin("sale.employee", "employee")
+                    .where("employee.branch_id = :branchId", { branchId: branch.id })
+                    .andWhere("sale.status = :saleStatus", { saleStatus: StatusEnum.ACTIVE })
+                    .andWhere(
+                        `DATE_TRUNC('month', sale.createdAt AT TIME ZONE 'America/Sao_Paulo') = 
+                 DATE_TRUNC('month', NOW() AT TIME ZONE 'America/Sao_Paulo')`
+                    )
+                    .getRawOne();
+
+                return {
+                    ...branch,
+                    employee_count: Number(branches.raw[i]["employee_count"]),
+                    month_revenue: Number(month_revenue?.month_revenue ?? 0)
+                };
+            })
+        );
     }
 
     static parse_branch_id(params: any): number {

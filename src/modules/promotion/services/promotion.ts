@@ -107,7 +107,7 @@ export class PromotionService {
             );
 
             const eligible = product_mapping.some(p =>
-                promotion_products.some(prod => prod.id === p.product_info.product_id)
+                promotion_products.some(prod => prod.product_info_id === p.product_info.product_id)
             );
 
             if (subtotal > promotion.constraint && eligible) {
@@ -146,7 +146,8 @@ export class PromotionService {
             },
             order: {
                 start: "DESC"
-            }
+            },
+            relations: ["products.product_info.product"]
         });
     }
 }
