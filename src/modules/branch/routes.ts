@@ -38,6 +38,19 @@ router.post("/",
     }
 );
 
+router.patch("/:branch_id",
+    AuthMiddleware,
+    RoleMiddleware([RoleEnum.ADMIN]),
+    async (req, res) => {
+        /* 
+          #swagger.tags = ['Branches']
+          #swagger.path = '/branch/:branch_id'
+          #swagger.description = 'Update a Branch'
+        */
+        await BranchController.update(req, res);
+    }
+);
+
 router.get("/",
     AuthMiddleware,
     RoleMiddleware([RoleEnum.ADMIN]),

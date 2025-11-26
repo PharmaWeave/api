@@ -46,6 +46,19 @@ router.get("/",
     }
 );
 
+router.patch("/:employee_id",
+    AuthMiddleware,
+    RoleMiddleware([RoleEnum.ADMIN, RoleEnum.MANAGER]),
+    async (req, res) => {
+        /* 
+          #swagger.tags = ['Employee']
+          #swagger.path = '/user/employee/:employee_id'
+          #swagger.description = 'Update an Employee'
+        */
+        await EmployeeController.update(req, res);
+    }
+);
+
 router.patch("/activate",
     async (req, res) => {
         /* 
@@ -80,6 +93,19 @@ router.patch("/promote/:employee_id",
           #swagger.description = 'Promote an Employee to be a Brand manager'
         */
         await EmployeeController.promote_to_manager(req, res);
+    }
+);
+
+router.patch("/demote/:employee_id",
+    AuthMiddleware,
+    RoleMiddleware([RoleEnum.ADMIN]),
+    async (req, res) => {
+        /* 
+          #swagger.tags = ['Employee']
+          #swagger.path = '/user/employee/demote/:employee_id'
+          #swagger.description = 'Demote a Manager to be an Employee'
+        */
+        await EmployeeController.demote_to_employee(req, res);
     }
 );
 

@@ -29,6 +29,36 @@ export class BranchService {
         });
     }
 
+    static async update(branch_id: number, data: any, user: RequestUser) {
+        const validated = BranchValidator.parse(data);
+
+        const BranchRepository = AppDataSource.getRepository(Branch);
+        const branch = await BranchRepository.findOne({
+            where: {
+                id: branch_id
+            },
+            relations: ["address"]
+        });
+
+        if (!branch) throw new NotFound("Unidade não encontrada");
+
+        return await AppDataSource.manager.transaction(async (TransactionManager) => {
+            await TransactionManager.update(Address, {
+                id: branch.address.id
+            }, validated.address);
+
+            const saved = await TransactionManager.update(Branch, {
+                id: branch.id
+            }, {
+                name: validated.name,
+                phone: validated.phone,
+                brand_id: user.id
+            });
+
+            return saved;
+        });
+    }
+
     static async toggle_status(branch_id: number) {
         const BranchRepository = AppDataSource.getRepository(Branch);
 

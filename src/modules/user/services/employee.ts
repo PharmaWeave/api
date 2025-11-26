@@ -14,7 +14,7 @@ import { BadRequest } from "@/utils/errors/bad-request";
 import { EmployeeUser, User } from "@/modules/user/models/user";
 import TemplateService from "@/modules/notification/services/template";
 import EmailService from "@/services/email";
-import { QueryRunner } from "typeorm";
+import { In, QueryRunner } from "typeorm";
 
 export interface JwtPasswordResetPayload {
     id: number;
@@ -49,6 +49,33 @@ class EmployeeService {
 
         await manager.getRepository(User).save(employee);
         return employee;
+    }
+
+    static async update(user_id: number, data: any, user: RequestUser) {
+        const validated = EmployeeValidator.parse(data);
+
+        const EmployeeRepository = AppDataSource.getRepository(User);
+        const employee = await EmployeeRepository.findOneBy({
+            id: user_id,
+            role: In([RoleEnum.EMPLOYEE, RoleEnum.MANAGER])
+        });
+
+        if (!employee) throw new NotFound("Funcionário não encontrado");
+
+        const branch = await AppDataSource.getRepository(Branch).findOneBy({ id: validated.branch_id });
+        if (!branch || branch.brand_id !== user.brand_id || branch.status !== StatusEnum.ACTIVE) {
+            throw new NotFound("A filial não foi encontrada para ser atribuída ao funcionário");
+        }
+
+        EmployeeRepository.merge(employee, {
+            register: validated.register,
+            name: validated.name,
+            email: validated.email,
+            salary: validated.salary,
+            branch_id: validated.branch_id
+        });
+
+        return await EmployeeRepository.save(employee);
     }
 
     static create_password_reset_token(user_id: number): string {

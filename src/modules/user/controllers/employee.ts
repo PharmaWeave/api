@@ -34,7 +34,33 @@ class EmployeeController {
             if (err instanceof QueryFailedError) {
                 if (err.driverError.code === "23505") {
                     return res.status(400).json({
-                        error: "Um empregado com esse CPF já existe!"
+                        error: "Um usuário com esse CPF já existe!"
+                    });
+                }
+            }
+
+            throw err;
+        }
+    }
+
+    static async update(req: Request, res: Response) {
+        const parser = z.object({
+            employee_id: z.string().regex(/^\d+$/).transform(Number)
+        });
+
+        const { employee_id } = parser.parse(req.params);
+
+        try {
+            const updated = await EmployeeService.update(employee_id, req.body, req.user as RequestUser);
+
+            res.status(200).json({
+                data: updated
+            });
+        } catch (err) {
+            if (err instanceof QueryFailedError) {
+                if (err.driverError.code === "23505") {
+                    return res.status(400).json({
+                        error: "Um usuário com esse CPF já existe!"
                     });
                 }
             }
@@ -64,8 +90,10 @@ class EmployeeController {
 
             if (!employee) throw new BadRequest("Usuário não encontrado para o token fornecido");
 
-            if (employee.status === StatusEnum.ACTIVE) throw new BadRequest("O usuário já está ativo");
-            if (employee.password) throw new BadRequest("Token inválido");
+            if (
+                (employee.status === StatusEnum.ACTIVE && employee.password)
+                || (employee.status === StatusEnum.INACTIVE && employee.password)
+            ) throw new BadRequest("Token inválido");
 
             const validated = EmployeePasswordValidator.parse(req.body);
             const hashed = await bcrypt.hash(validated.password, 10);
@@ -93,6 +121,39 @@ class EmployeeController {
             .update(User)
             .set({
                 role: RoleEnum.MANAGER
+            })
+            .where("id = :id AND status = :status AND role IN ('E', 'M')", {
+                id: employee_id,
+                status: StatusEnum.ACTIVE
+            })
+            .returning("*")
+            .execute();
+
+        if (!employee.affected) throw new NotFound("O funcionário não foi encontrado");
+
+        const {
+            password: _password,
+            legal_name: _legalName,
+            ...data
+        } = employee.raw[0];
+
+        return res.status(200).json({
+            data: data
+        });
+    }
+
+    static async demote_to_employee(req: Request, res: Response) {
+        const parser = z.object({
+            employee_id: z.string().regex(/^\d+$/).transform(Number)
+        });
+
+        const { employee_id } = parser.parse(req.params);
+
+        const EmployeeRepository = AppDataSource.getRepository(User);
+        const employee = await EmployeeRepository.createQueryBuilder()
+            .update(User)
+            .set({
+                role: RoleEnum.EMPLOYEE
             })
             .where("id = :id AND status = :status AND role IN ('E', 'M')", {
                 id: employee_id,
@@ -218,6 +279,7 @@ class EmployeeController {
                 "branch.id",
                 "branch.name"
             ])
+            .orderBy("user.name")
             .getMany();
 
         return res.status(200).json({

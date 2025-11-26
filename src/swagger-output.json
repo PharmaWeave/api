@@ -48,6 +48,19 @@
         }
       }
     },
+    "/user/status/:user_id": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Toggle user status including employees possibly",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/user/signup": {
       "post": {
         "tags": [
@@ -288,6 +301,19 @@
           "Branches"
         ],
         "description": "Retrieve all branches of the brand",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/branch/:branch_id": {
+      "patch": {
+        "tags": [
+          "Branches"
+        ],
+        "description": "Update a Branch",
         "responses": {
           "default": {
             "description": ""
@@ -551,7 +577,7 @@
         "tags": [
           "Product"
         ],
-        "description": "Update any field of some Product that exists in your Branch",
+        "description": "Toggle the status of a Product Info of a Branch",
         "responses": {
           "200": {
             "description": "OK"

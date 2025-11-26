@@ -37,7 +37,7 @@ router.get("/",
 
 router.patch("/:user_id",
     AuthMiddleware,
-    RoleMiddleware([RoleEnum.EMPLOYEE, RoleEnum.MANAGER]),
+    RoleMiddleware([RoleEnum.ADMIN, RoleEnum.MANAGER]),
     async (req, res) => {
         /* 
           #swagger.tags = ['Users']

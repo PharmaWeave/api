@@ -3,6 +3,7 @@ import { BranchService } from "@/modules/branch/services/branch";
 import { RequestUser } from "@/middlewares/auth";
 import { QueryFailedError } from "typeorm";
 import { BadRequest } from "@/utils/errors/bad-request";
+import z from "zod";
 
 class BranchController {
 
@@ -10,6 +11,26 @@ class BranchController {
         try {
             const saved = await BranchService.save(req.body, req.user as RequestUser);
             return res.status(201).json({ data: saved });
+        } catch (err) {
+            if (err instanceof QueryFailedError) {
+                if (err.driverError.constraint === "UQ_branch_name_brand") {
+                    throw new BadRequest("A empresa já possui uma filial com o mesmo nome!");
+                }
+            }
+            throw err;
+        }
+    }
+
+    static async update(req: Request, res: Response) {
+        const parser = z.object({
+            branch_id: z.string().regex(/^\d+$/).transform(Number)
+        });
+
+        const { branch_id } = parser.parse(req.params);
+
+        try {
+            const updated = await BranchService.update(branch_id, req.body, req.user as RequestUser);
+            res.status(200).json({ data: updated });
         } catch (err) {
             if (err instanceof QueryFailedError) {
                 if (err.driverError.constraint === "UQ_branch_name_brand") {
