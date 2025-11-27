@@ -46,6 +46,17 @@ router.get("/",
     }
 );
 
+router.patch("/activate",
+    async (req, res) => {
+        /* 
+          #swagger.tags = ['Employee']
+          #swagger.path = '/user/employee/activate'
+          #swagger.description = 'Activate an Employee creating a password'
+        */
+        await EmployeeController.activate(req, res);
+    }
+);
+
 router.patch("/:employee_id",
     AuthMiddleware,
     RoleMiddleware([RoleEnum.ADMIN, RoleEnum.MANAGER]),
@@ -56,17 +67,6 @@ router.patch("/:employee_id",
           #swagger.description = 'Update an Employee'
         */
         await EmployeeController.update(req, res);
-    }
-);
-
-router.patch("/activate",
-    async (req, res) => {
-        /* 
-          #swagger.tags = ['Employee']
-          #swagger.path = '/user/employee/activate'
-          #swagger.description = 'Activate an Employee creating a password'
-        */
-        await EmployeeController.activate(req, res);
     }
 );
 

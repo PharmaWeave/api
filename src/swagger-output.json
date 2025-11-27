@@ -161,6 +161,19 @@
         }
       }
     },
+    "/user/employee/:employee_id": {
+      "patch": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Update an Employee",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/user/employee/status/:employee_id": {
       "patch": {
         "tags": [
@@ -180,6 +193,19 @@
           "Employee"
         ],
         "description": "Promote an Employee to be a Brand manager",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/employee/demote/:employee_id": {
+      "patch": {
+        "tags": [
+          "Employee"
+        ],
+        "description": "Demote a Manager to be an Employee",
         "responses": {
           "default": {
             "description": ""

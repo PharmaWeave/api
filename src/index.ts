@@ -13,6 +13,7 @@ import { config } from "./config/config";
 
 import branch from "@/modules/branch/routes";
 import product from "@/modules/product/routes";
+import metrics from "@/modules/metrics/routes";
 import sale from "@/modules/sale/routes";
 import promotion from "@/modules/promotion/routes";
 import users from "@/modules/user/routes/routes";
@@ -37,6 +38,7 @@ app.use(express.json());
 
 app.use("/branch", branch);
 app.use("/product", product);
+app.use("/metrics", metrics);
 app.use("/sale", sale);
 app.use("/promotion", promotion);
 app.use("/user", users);

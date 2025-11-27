@@ -80,6 +80,17 @@ class AuthController {
         });
     }
 
+    static async logout(req: Request, res: Response) {
+        res.cookie("refresh_token", null, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+            maxAge: 0
+        });
+
+        return res.status(204).send();
+    }
+
     static async refresh(req: Request, res: Response) {
         const validated = RefreshValidator.parse(req.cookies);
 

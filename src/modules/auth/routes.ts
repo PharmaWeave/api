@@ -20,6 +20,14 @@ router.post("/login", async (req, res) => {
     await AuthController.login(req, res);
 });
 
+router.post("/logout", async (req, res) => {
+    /* 
+      #swagger.tags = ['Auth']
+      #swagger.description = 'Logout - Remove refresh cookie'
+    */
+    await AuthController.logout(req, res);
+});
+
 router.post("/refresh", async (req, res) => {
     /* 
       #swagger.tags = ['Auth']
