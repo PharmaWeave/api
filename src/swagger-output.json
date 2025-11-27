@@ -247,6 +247,19 @@
         }
       }
     },
+    "/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Logout - Remove refresh cookie",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        }
+      }
+    },
     "/refresh": {
       "post": {
         "tags": [

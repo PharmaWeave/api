@@ -16,12 +16,22 @@ class ProductService {
         const validated = ProductValidator.parse(data);
 
         return await AppDataSource.manager.transaction(async (TransactionManager) => {
-            const product = TransactionManager.create(Product, {
-                name: validated.name,
-                description: validated.description,
-                brand_id: user.brand_id
+            const existing = await TransactionManager.findOne(Product, {
+                where: {
+                    name: validated.name,
+                    brand_id: user.brand_id
+                }
             });
-            await TransactionManager.save(Product, product);
+
+            let product = existing;
+            if (!product) {
+                product = TransactionManager.create(Product, {
+                    name: validated.name,
+                    description: validated.description,
+                    brand_id: user.brand_id
+                });
+                await TransactionManager.save(Product, product);
+            }
 
             const product_info = TransactionManager.create(ProductInfo, {
                 ...validated.info,
