@@ -213,7 +213,7 @@
         }
       }
     },
-    "/login": {
+    "/auth/login": {
       "post": {
         "tags": [
           "Auth"
@@ -247,7 +247,7 @@
         }
       }
     },
-    "/logout": {
+    "/auth/logout": {
       "post": {
         "tags": [
           "Auth"
@@ -260,7 +260,7 @@
         }
       }
     },
-    "/refresh": {
+    "/auth/refresh": {
       "post": {
         "tags": [
           "Auth"

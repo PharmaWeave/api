@@ -6,6 +6,7 @@ const router: Router = express.Router();
 router.post("/login", async (req, res) => {
     /* 
       #swagger.tags = ['Auth']
+      #swagger.path = '/auth/login'
       #swagger.description = 'Login as Admin or Employee'
       #swagger.parameters['login'] = {
           in: 'body',
@@ -23,6 +24,7 @@ router.post("/login", async (req, res) => {
 router.post("/logout", async (req, res) => {
     /* 
       #swagger.tags = ['Auth']
+      #swagger.path = '/auth/logout'
       #swagger.description = 'Logout - Remove refresh cookie'
     */
     await AuthController.logout(req, res);
@@ -31,6 +33,7 @@ router.post("/logout", async (req, res) => {
 router.post("/refresh", async (req, res) => {
     /* 
       #swagger.tags = ['Auth']
+      #swagger.path = '/auth/refresh'
       #swagger.description = 'Refresh access token'
     */
     await AuthController.refresh(req, res);
