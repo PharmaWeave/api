@@ -23,36 +23,40 @@ export class MetricsService {
             const branch_count = branches.length;
             const ids = branches.map(branch => branch.id);
 
-            const currentMonthResult = await SaleRepository
-                .createQueryBuilder("sale")
-                .innerJoin("sale.user", "user")
-                .where("user.branch_id IN (:...branchIds)", { branchIds: ids })
-                .andWhere("sale.created_at >= CURRENT_DATE - INTERVAL '30 days'")
-                .andWhere("sale.created_at < CURRENT_DATE + INTERVAL '1 day'")
-                .andWhere("sale.status = 'A'")
-                .select("SUM(sale.total_amount)", "totalRevenue")
-                .getRawOne<{ totalRevenue: number }>() ?? { totalRevenue: 0 };
+            if (ids.length) {
+                const currentMonthResult = await SaleRepository
+                    .createQueryBuilder("sale")
+                    .innerJoin("sale.user", "user")
+                    .where("user.branch_id IN (:...branchIds)", { branchIds: ids })
+                    .andWhere("sale.created_at >= CURRENT_DATE - INTERVAL '30 days'")
+                    .andWhere("sale.created_at < CURRENT_DATE + INTERVAL '1 day'")
+                    .andWhere("sale.status = 'A'")
+                    .select("SUM(sale.total_amount)", "totalRevenue")
+                    .getRawOne<{ totalRevenue: number }>() ?? { totalRevenue: 0 };
 
-            const currentRevenue = Number(currentMonthResult.totalRevenue) || 0;
+                const currentRevenue = Number(currentMonthResult.totalRevenue) || 0;
 
-            const previousMonthResult = await SaleRepository
-                .createQueryBuilder("sale")
-                .innerJoin("sale.user", "user")
-                .where("user.branch_id IN (:...branchIds)", { branchIds: ids })
-                .andWhere("sale.created_at >= CURRENT_DATE - INTERVAL '60 days'")
-                .andWhere("sale.created_at < CURRENT_DATE - INTERVAL '30 days'")
-                .andWhere("sale.status = 'A'")
-                .select("SUM(sale.total_amount)", "totalRevenue")
-                .getRawOne<{ totalRevenue: number }>() ?? { totalRevenue: 0 };
+                const previousMonthResult = await SaleRepository
+                    .createQueryBuilder("sale")
+                    .innerJoin("sale.user", "user")
+                    .where("user.branch_id IN (:...branchIds)", { branchIds: ids })
+                    .andWhere("sale.created_at >= CURRENT_DATE - INTERVAL '60 days'")
+                    .andWhere("sale.created_at < CURRENT_DATE - INTERVAL '30 days'")
+                    .andWhere("sale.status = 'A'")
+                    .select("SUM(sale.total_amount)", "totalRevenue")
+                    .getRawOne<{ totalRevenue: number }>() ?? { totalRevenue: 0 };
 
-            const previousRevenue = Number(previousMonthResult.totalRevenue) || 0;
+                const previousRevenue = Number(previousMonthResult.totalRevenue) || 0;
 
-            const growth = (previousRevenue === currentRevenue)
-                ? 0 : previousRevenue === 0
-                    ? 100
-                    : ((currentRevenue - previousRevenue) / previousRevenue) * 100;
+                const growth = (previousRevenue === currentRevenue)
+                    ? 0 : previousRevenue === 0
+                        ? 100
+                        : ((currentRevenue - previousRevenue) / previousRevenue) * 100;
 
-            return { branch_count, month_revenue: currentRevenue, growth_percentage: growth };
+                return { branch_count, month_revenue: currentRevenue, growth_percentage: growth };
+            }
+
+            return { branch_count, month_revenue: 0, growth_percentage: 0 };
         } else if (user.role === RoleEnum.EMPLOYEE) {
             const startOfToday = new Date();
             startOfToday.setHours(0, 0, 0, 0);

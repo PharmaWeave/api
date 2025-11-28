@@ -85,7 +85,7 @@ export class PromotionService {
             product_mapping.sort((a, b) => b.product_info.price - a.product_info.price);
 
             for (const item of product_mapping) {
-                if (promotion_products.some(p => p.id === item.product_info.product_id)) {
+                if (promotion_products.some(p => p.product_info_id === item.product_info.id)) {
                     const count = Math.min(item.quantity, promotion.constraint);
                     if (count <= 0) continue;
 
@@ -107,7 +107,7 @@ export class PromotionService {
             );
 
             const eligible = product_mapping.some(p =>
-                promotion_products.some(prod => prod.product_info_id === p.product_info.product_id)
+                promotion_products.some(prod => prod.product_info_id === p.product_info.id)
             );
 
             if (subtotal > promotion.constraint && eligible) {
